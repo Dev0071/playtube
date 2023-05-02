@@ -1,6 +1,7 @@
 import { creatError } from '../error.js';
 import video from '../models/video.js';
 import Video from '../models/video.js';
+import User from '../models/User.js';
 
 // add video
 export const addVideo = async (req, res, next) => {
@@ -61,9 +62,47 @@ export const getVideo = async (req, res, next) => {
   }
 };
 
-// update video viewa video
+// update video views video
 export const updateViews = async (req, res, next) => {
   try {
+    await Video.findByIdAndRemove(req.params.id, {
+      $inc: { views: 1 },
+    });
+    res.status(200).json('viewa incresed by one');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const randomVideo = async (req, res, next) => {
+  try {
+    const videos = await Video.aggregate([{ $sample: { size: 40 } }]);
+    res.status(200).json(videos);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const trend = async (req, res, next) => {
+  try {
+    const videos = await Video.find().sort({ views: -1 });
+    res.status(200).json(videos);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const subscribed = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const subscribedChannels = user.subscribedUsers;
+    const list = Promise.all(
+      subscribedChannels.map((channelId) => {
+        return Video.find({ userId: channelId });
+      })
+    );
+
+    res.status(200).json(list);
   } catch (error) {
     next(error);
   }

@@ -3,7 +3,11 @@ import {
   addVideo,
   deleteVideo,
   getVideo,
+  randomVideo,
+  subscribed,
+  trend,
   updateVideo,
+  updateViews,
 } from '../controllers/video.js';
 import { verifyToken } from '../verifyUser.js';
 
@@ -22,12 +26,12 @@ router.put('/:id', verifyToken, updateVideo);
 router.get('/find/:id', getVideo);
 
 // updateviews
-router.put('/views/:id');
+router.put('/views/:id', updateViews);
 
-router.get('/trend/:id');
+router.get('/trend/:id', trend);
 
-router.get('/random/:id');
+router.get('/random/:id', randomVideo);
 
-router.get('/sub/:id');
+router.get('/sub/:id', verifyToken, subscribed);
 
 export default router;

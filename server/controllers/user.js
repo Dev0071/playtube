@@ -63,7 +63,7 @@ export const dislike = async (req, res, next) => {
 
 export const subscribe = async (req, res, next) => {
   try {
-    await User.findById(req.params.id, {
+    await User.findByIdAndUpdate(req.params.id, {
       $push: { subscribedUser: req.params.id },
     });
     await User.findByIdAndUpdate(req.params.id, {
@@ -77,7 +77,7 @@ export const subscribe = async (req, res, next) => {
 
 export const unsubscribe = async (req, res, next) => {
   try {
-    await User.findById(req.params.id, {
+    await User.findByIdAndUpdate(req.params.id, {
       $pull: { subscribedUser: req.params.id },
     });
     await User.findByIdAndUpdate(req.params.id, {
