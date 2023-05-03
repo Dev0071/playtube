@@ -2,8 +2,10 @@ import express from 'express';
 import {
   addVideo,
   deleteVideo,
+  getByTag,
   getVideo,
   randomVideo,
+  search,
   subscribed,
   trend,
   updateVideo,
@@ -28,10 +30,12 @@ router.get('/find/:id', getVideo);
 // updateviews
 router.put('/views/:id', updateViews);
 
-router.get('/trend/:id', trend);
+router.get('/trend', trend);
+router.get('/tags', getByTag);
+router.get('/search', search);
 
-router.get('/random/:id', randomVideo);
+router.get('/random', randomVideo);
 
-router.get('/sub/:id', verifyToken, subscribed);
+router.get('/sub', verifyToken, subscribed);
 
 export default router;
