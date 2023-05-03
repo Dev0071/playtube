@@ -1,5 +1,6 @@
 import { creatError } from '../error.js';
 import User from '../models/User.js';
+import Video from '../models/video.js';
 
 // update a user
 export const updateUser = async (req, res, next) => {
@@ -48,14 +49,28 @@ export const getUser = async (req, res, next) => {
 };
 
 export const like = async (req, res, next) => {
+  const id = req.user.id;
+  const videoId = req.params.videoId;
   try {
+    await Video.findByIdAndUpdate(videoId, {
+      $addToSet: { likes: id },
+      $pull: { dislikes: id },
+    });
+    res.status(200).json('liked the video');
   } catch (error) {
     next(error);
   }
 };
 
 export const dislike = async (req, res, next) => {
+  const id = req.user.id;
+  const videoId = req.params.videoId;
   try {
+    await Video.findByIdAndUpdate(videoId, {
+      $addToSet: { dislikes: id },
+      $pull: { likes: id },
+    });
+    res.status(200).json('disliked the video');
   } catch (error) {
     next(error);
   }
@@ -63,22 +78,22 @@ export const dislike = async (req, res, next) => {
 
 export const subscribe = async (req, res, next) => {
   try {
-    await User.findByIdAndUpdate(req.params.id, {
-      $push: { subscribedUser: req.params.id },
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { subscribedUsers: req.params.id },
     });
     await User.findByIdAndUpdate(req.params.id, {
       $inc: { subscribers: 1 },
     });
     res.status(200).json('Subscription successful');
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
 export const unsubscribe = async (req, res, next) => {
   try {
-    await User.findByIdAndUpdate(req.params.id, {
-      $pull: { subscribedUser: req.params.id },
+    await User.findByIdAndUpdate(req.user.id, {
+      $pull: { subscribedUsers: req.params.id },
     });
     await User.findByIdAndUpdate(req.params.id, {
       $inc: { subscribers: -1 },
